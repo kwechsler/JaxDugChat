@@ -3,24 +3,20 @@
 }
 
 @section styles {
-    <style type="text/css">
-        .container {
-            background-color: #99CCFF;
-            border: thick solid #808080;
-            padding: 20px;
-            margin: 20px;
-        }
-    </style>
+    
 }
 
 <h2>JaxDUG Chat</h2>
 
 <div class="container">
+    <span id="isConnected" class="label label-default">Disconnected</span>
     <input type="text" id="message" />
     <input type="button" id="sendmessage" value="Send" />
     <input type="hidden" id="displayname" />
     <ul id="discussion">
     </ul>
+    <button id="btnConnect" class="btn btn-primary">Connect</button>
+    <button id="btnDisconnect" class="btn btn-info">Disconnect</button>
 </div>
 
 @section scripts {
@@ -44,18 +40,30 @@
                     + '</strong>:&nbsp;&nbsp;' + encodedMsg + '</li>');
             };
             // Get the user name and store it to prepend to messages.
-            $('#displayname').val(prompt('Enter your name:', ''));
+            //TODO: Add a button to connect
+            //$('#displayname').val(prompt('Enter your name:', ''));
             // Set initial focus to message input box.  
             $('#message').focus();
             // Start the connection.
-            $.connection.hub.start().done(function () {
-                $('#sendmessage').click(function () {
-                    // Call the Send method on the hub. 
-                    chat.server.send($('#displayname').val(), $('#message').val());
-                    // Clear text box and reset focus for next comment. 
-                    $('#message').val('').focus();
+            $("#btnConnect").on("click", function (event) {
+                $('#displayname').val(prompt('Enter your name:', ''));
+                $.connection.hub.start().done(function () {
+                    $("span#isConnected").removeClass("label-default").addClass("label-success").text("Connected");
+                    $('#sendmessage').on("click", function (event) {
+                        // Call the Send method on the hub. 
+                        chat.server.send($('#displayname').val(), $('#message').val());
+                        // Clear text box and reset focus for next comment. 
+                        $('#message').val('').focus();
+                    });
                 });
             });
+
+            $("#btnDisconnect").on("click", function (event) {
+                $.connection.hub.stop();
+                $("span#isConnected").removeClass("label-success").addClass("label-default").text("Disconnected");
+                $('#sendmessage').off("click");
+            });
+            
         });
     </script>
 }
