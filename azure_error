@@ -1,0 +1,28 @@
+Thu Sep 05 2013 17:18:38 GMT-0400 (Eastern Daylight Time):
+{ [Error: No account information found. Please import credentials using "azure account import <file>".]
+  stack: [Getter/Setter],
+  __frame: 
+   { name: 'lookupSiteWebSpace',
+     line: 508,
+     file: 'C:\\Program Files (x86)\\Microsoft SDKs\\Windows Azure\\CLI\\lib\\commands\\site.js',
+     prev: 
+      { name: 'lookupSiteNameAndWebSpace',
+        line: 522,
+        file: 'C:\\Program Files (x86)\\Microsoft SDKs\\Windows Azure\\CLI\\lib\\commands\\site.js',
+        prev: [Object],
+        active: false,
+        offset: 7,
+        col: 4 },
+     active: false,
+     offset: 2,
+     col: 16 },
+  rawStack: [Getter] }
+Error: No account information found. Please import credentials using "azure account import <file>".
+    at Object.readFromFile (C:\Program Files (x86)\Microsoft SDKs\Windows Azure\CLI\lib\util\keyFiles.js:32:11)
+    at Command.exports.init.account.managementCertificate (C:\Program Files (x86)\Microsoft SDKs\Windows Azure\CLI\lib\commands\account.js:490:21)
+    at Object.exports.createWebsiteManagementService (C:\Program Files (x86)\Microsoft SDKs\Windows Azure\CLI\lib\util\utils.js:118:21)
+    at createWebsiteManagementService (C:\Program Files (x86)\Microsoft SDKs\Windows Azure\CLI\lib\commands\site.js:1049:18)
+    at site_doSitesGet__17 (C:\Program Files (x86)\Microsoft SDKs\Windows Azure\CLI\lib\commands\site.js:928:17)
+    at lookupSiteWebSpace (C:\Program Files (x86)\Microsoft SDKs\Windows Azure\CLI\lib\commands\site.js:510:16)
+    at lookupSiteNameAndWebSpace (C:\Program Files (x86)\Microsoft SDKs\Windows Azure\CLI\lib\commands\site.js:529:4)
+    at __8 (C:\Program Files (x86)\Microsoft SDKs\Windows Azure\CLI\lib\commands\site.js:656:10)
