@@ -13,8 +13,13 @@
 <h2>JaxDUG Chat</h2>
 
 <div class="container">
+    <div class="alert alert-warning fade in"></div>
     <button id="btnConnect" class="btn btn-primary">Connect</button>
-    <button id="btnDisconnect" class="btn btn-info">Disconnect</button><br /><br />
+    <button id="btnDisconnect" class="btn btn-info">Disconnect</button>
+    <div id="currentUsers">
+        <p>You are not currently connected</p>
+    </div>
+    <br /><br />
     <span id="isConnected" class="label label-default">Disconnected</span>
     <input type="text" id="message" />
     <input type="button" id="sendmessage" value="Send" class="btn btn-default" /><br /><br />
@@ -40,9 +45,12 @@
     <script src="~/signalr/hubs"></script>
     <!--Add script to update the page and send messages.--> 
     <script type="text/javascript">
+        var users = [];
         $(document).ready(function () {
             // Declare a proxy to reference the hub. 
             var chat = $.connection.chatHub;
+            
+
             // Create a function that the hub can call to broadcast messages.
             chat.client.broadcastMessage = function (name, message) {
                 // Html encode display name and message. 
@@ -52,6 +60,28 @@
                 $('#discussion').append('<li><strong>' + encodedName
                     + '</strong>:&nbsp;&nbsp;' + encodedMsg + '</li>');
             };
+
+            chat.client.newUserAddedMessage = function (name) {
+                //alert("User " + name + " was added to your chat.");
+                $('.alert').text(name + 'Just signed on.').alert();
+                setTimeout(function () { $('.alert').alert('close'); }, 2000);
+                users.push(name);
+            };
+
+            chat.client.userRemovedMessage = function (name) {
+                users.pop(name);
+                chat.server.getAllChatUsers();
+                //alert("User " + name + " was removed from your chat.");
+            };
+
+            chat.client.usersInChat = function (usersArray) {
+                users = usersArray;
+                $("#currentUsers").html('');
+                $.each(users, function (index, item) {
+                    $("#currentUsers").append('<span class="label label-default">' + item + '</span><br />');
+                });
+            };
+
             // Get the user name and store it to prepend to messages.
             //TODO: Add a button to connect
             //$('#displayname').val(prompt('Enter your name:', ''));
@@ -62,6 +92,9 @@
                 $('#displayname').val(prompt('Enter your name:', ''));
                 $.connection.hub.start().done(function () {
                     $("span#isConnected").removeClass("label-default").addClass("label-success").text("Connected");
+                    chat.server.addChatUser($('#displayname').val()).done(function () {
+                        chat.server.getAllChatUsers();
+                    });
                     $('#sendmessage').on("click", function (event) {
                         // Call the Send method on the hub. 
                         chat.server.send($('#displayname').val(), $('#message').val());
@@ -72,9 +105,12 @@
             });
 
             $("#btnDisconnect").on("click", function (event) {
-                $.connection.hub.stop();
-                $("span#isConnected").removeClass("label-success").addClass("label-default").text("Disconnected");
-                $('#sendmessage').off("click");
+                chat.server.removeChatUser($('#displayname').val()).done(function () {
+                    $("#currentUsers").html('');
+                    $.connection.hub.stop();
+                    $("span#isConnected").removeClass("label-success").addClass("label-default").text("Disconnected");
+                    $('#sendmessage').off("click");
+                });
             });
             
         });
