@@ -3,20 +3,33 @@
 }
 
 @section styles {
-    
+    <style type="text/css">
+        ul#discussion  {
+            list-style-type: none;
+        }
+    </style>
 }
 
 <h2>JaxDUG Chat</h2>
 
 <div class="container">
+    <button id="btnConnect" class="btn btn-primary">Connect</button>
+    <button id="btnDisconnect" class="btn btn-info">Disconnect</button><br /><br />
     <span id="isConnected" class="label label-default">Disconnected</span>
     <input type="text" id="message" />
-    <input type="button" id="sendmessage" value="Send" />
+    <input type="button" id="sendmessage" value="Send" class="btn btn-default" /><br /><br />
     <input type="hidden" id="displayname" />
-    <ul id="discussion">
-    </ul>
-    <button id="btnConnect" class="btn btn-primary">Connect</button>
-    <button id="btnDisconnect" class="btn btn-info">Disconnect</button>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title">Your Chat here</h3>
+        </div>
+        <div class="panel-body">
+            <ul id="discussion">
+            </ul>
+        </div>
+    </div>
+    
+    
 </div>
 
 @section scripts {

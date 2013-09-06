@@ -25,7 +25,7 @@ namespace JaxDugChat
 
             bundles.Add(new StyleBundle("~/Content/css").Include("~/Content/site.css"));
 
-            bundles.Add(new StyleBundle("~/Content/bootstrap").Include(
+            bundles.Add(new StyleBundle("~/Styles/bootstrap").Include(
                 "~/Content/bootstrap/bootstrap.css", 
                 "~/Content/bootstrap/bootstrap-theme.css"));
 
