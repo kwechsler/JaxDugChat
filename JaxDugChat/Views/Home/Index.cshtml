@@ -7,19 +7,29 @@
         ul#discussion  {
             list-style-type: none;
         }
+        .fade {
+            opacity: 0;
+            -webkit-transition: opacity 0.15s linear;
+            -moz-transition: opacity 0.15s linear;
+            -o-transition: opacity 0.15s linear;
+            transition: opacity 0.15s linear;
+        }
+        .fade.in {
+            opacity: 1;
+        }
     </style>
 }
 
 <h2>JaxDUG Chat</h2>
 
 <div class="container">
-    <div class="alert alert-warning fade in"></div>
+    <div class="alert alert-warning fade"></div>
     <button id="btnConnect" class="btn btn-primary">Connect</button>
     <button id="btnDisconnect" class="btn btn-info">Disconnect</button>
-    <div id="currentUsers">
+    <div id="currentUsers" class="inline">
         <p>You are not currently connected</p>
     </div>
-    <br /><br />
+    
     <span id="isConnected" class="label label-default">Disconnected</span>
     <input type="text" id="message" />
     <input type="button" id="sendmessage" value="Send" class="btn btn-default" /><br /><br />
@@ -63,22 +73,28 @@
 
             chat.client.newUserAddedMessage = function (name) {
                 //alert("User " + name + " was added to your chat.");
-                $('.alert').text(name + 'Just signed on.').alert();
-                setTimeout(function () { $('.alert').alert('close'); }, 2000);
+                $('.alert').text(name + ' just signed on.').addClass('in');
+                setTimeout(function () {
+                    $('.alert').removeClass('in');
+                }, 5000);
                 users.push(name);
             };
 
             chat.client.userRemovedMessage = function (name) {
                 users.pop(name);
+                $('.alert').text(name + ' just signed out.').addClass('in');
+                setTimeout(function () {
+                    $('.alert').removeClass('in');
+                }, 5000);
                 chat.server.getAllChatUsers();
                 //alert("User " + name + " was removed from your chat.");
             };
 
             chat.client.usersInChat = function (usersArray) {
                 users = usersArray;
-                $("#currentUsers").html('');
+                $("#currentUsers").html('Current users logged in: ');
                 $.each(users, function (index, item) {
-                    $("#currentUsers").append('<span class="label label-default">' + item + '</span><br />');
+                    $("#currentUsers").append('<span class="label label-default inline">' + item + '</span>&nbsp;');
                 });
             };
 
@@ -106,7 +122,7 @@
 
             $("#btnDisconnect").on("click", function (event) {
                 chat.server.removeChatUser($('#displayname').val()).done(function () {
-                    $("#currentUsers").html('');
+                    $("#currentUsers").html('<br />');
                     $.connection.hub.stop();
                     $("span#isConnected").removeClass("label-success").addClass("label-default").text("Disconnected");
                     $('#sendmessage').off("click");

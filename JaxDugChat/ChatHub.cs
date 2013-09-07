@@ -9,8 +9,9 @@ namespace JaxDugChat
 {
     public class ChatHub : Hub
     {
-        private List<string> users = new List<string>();
-        public List<string> Users {
+        // Creating Application In-Memory storage
+        public List<string> Users 
+        {
             get
             {
                 List<string> tempUsers = HttpContext.Current.Application["Users"] as List<string>;
@@ -19,35 +20,25 @@ namespace JaxDugChat
                     HttpContext.Current.Application["Users"] = new List<string>();
                     tempUsers = HttpContext.Current.Application["Users"] as List<string>;
                 }
-                users = tempUsers;
-                return users;
+                return tempUsers;
             }
             set
             {
-                users = value;
+                HttpContext.Current.Application.Lock();
                 HttpContext.Current.Application["Users"] = value;
+                HttpContext.Current.Application.UnLock();
             }
         }
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public ChatHub()
-        {
-            
-        }
-
         
-
-
         public void Send(string name, string message)
         {
             // Call the broadcastMessage method to update clients.
             Clients.All.broadcastMessage(name, message);
         }
 
+        //This method adds a user to the User list property and notifies all users
         public void AddChatUser(string user)
         {
-
             if (!Users.Contains(user))
             {
                 this.Users.Add(user);
@@ -55,12 +46,14 @@ namespace JaxDugChat
             Clients.All.newUserAddedMessage(user);
         }
 
+        //This method removes the user from the Users property and notifies all users
         public void RemoveChatUser(string user)
         {
             this.Users.Remove(user);
             Clients.All.userRemovedMessage(user);   
         }
 
+        //Returns a list of all Users
         public void GetAllChatUsers()
         {
             Clients.All.usersInChat(this.Users.ToArray());
