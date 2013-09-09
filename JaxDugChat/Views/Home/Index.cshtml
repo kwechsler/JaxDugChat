@@ -38,7 +38,7 @@
         <div class="panel-heading">
           <h3 class="panel-title">Your Chat here</h3>
         </div>
-        <div class="panel-body">
+        <div class="panel-body pre-scrollable" style="height: 200px">
             <ul id="discussion">
             </ul>
         </div>
@@ -69,6 +69,7 @@
                 // Add the message to the page. 
                 $('#discussion').append('<li><strong>' + encodedName
                     + '</strong>:&nbsp;&nbsp;' + encodedMsg + '</li>');
+                $(".panel-body").scrollTop($('.panel-body')[0].scrollHeight);
             };
 
             chat.client.newUserAddedMessage = function (name) {
