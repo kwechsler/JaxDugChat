@@ -1,4 +1,4 @@
-﻿@{
+﻿ @{
     ViewBag.Title = "Jax DUG Chat";
 }
 
@@ -25,7 +25,7 @@
 <div class="container">
     <div class="alert alert-warning fade"></div>
     <button id="btnConnect" class="btn btn-primary">Connect</button>
-    <button id="btnDisconnect" class="btn btn-info">Disconnect</button>
+    @*<button id="btnDisconnect" class="btn btn-info">Disconnect</button>*@
     <div id="currentUsers" class="inline">
         <p>You are not currently connected</p>
     </div>
@@ -105,29 +105,37 @@
             $('#message').focus();
             // Start the connection.
             $("#btnConnect").on("click", function (event) {
-                $('#displayname').val(prompt('Enter your name:', ''));
-                $.connection.hub.start().done(function () {
-                    $("span#isConnected").removeClass("label-default").addClass("label-success").text("Connected");
-                    chat.server.addChatUser($('#displayname').val()).done(function () {
-                        chat.server.getAllChatUsers();
+                if ($("span#isConnected").text() === "Disconnected")
+                {
+                    $('#displayname').val(prompt('Enter your name:', ''));
+                    $.connection.hub.start().done(function () {
+                        $("span#isConnected").removeClass("label-default").addClass("label-success").text("Connected");
+                        $("#btnConnect").removeClass("btn-primary").addClass("btn-danger").text("Disconnect");
+                        chat.server.addChatUser($('#displayname').val()).done(function () {
+                            chat.server.getAllChatUsers();
+                        });
+                        $('#sendmessage').on("click", function (event) {
+                            // Call the Send method on the hub. 
+                            chat.server.send($('#displayname').val(), $('#message').val());
+                            // Clear text box and reset focus for next comment. 
+                            $('#message').val('').focus();
+                        });
                     });
-                    $('#sendmessage').on("click", function (event) {
-                        // Call the Send method on the hub. 
-                        chat.server.send($('#displayname').val(), $('#message').val());
-                        // Clear text box and reset focus for next comment. 
-                        $('#message').val('').focus();
+                } else {
+                    chat.server.removeChatUser($('#displayname').val()).done(function () {
+                        $("#currentUsers").html('<p>You are not currently connected</p>');
+                        $.connection.hub.stop();
+                        $("span#isConnected").removeClass("label-success").addClass("label-default").text("Disconnected");
+                        $("#btnConnect").removeClass("btn-danger").addClass("btn-primary").text("Connect");
+                        $('#sendmessage').off("click");
                     });
-                });
+                }
+                
             });
 
-            $("#btnDisconnect").on("click", function (event) {
-                chat.server.removeChatUser($('#displayname').val()).done(function () {
-                    $("#currentUsers").html('<br />');
-                    $.connection.hub.stop();
-                    $("span#isConnected").removeClass("label-success").addClass("label-default").text("Disconnected");
-                    $('#sendmessage').off("click");
-                });
-            });
+            //$("#btnDisconnect").on("click", function (event) {
+               
+            //});
             
         });
     </script>
